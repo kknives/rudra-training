@@ -1,0 +1,13 @@
+#+TITLE: Session 2
+
++ ~ls~ lists the contents in alphabetical order
++ ~ls -l~ contents
++ ~symlink~ vs ~softlink~
++ Read /PEP8/
++ 2 programs, using ~*args~ and ~**kwargs~
++ Semantic Versioning
++ Shebang notation
++ Read the manpage for ~less~
++ ~pip~ docs
++ Ways to install packages in python
+* Python Program: Key ~W~ accelerates the M(10,100) & N(0,100) (time, speed)

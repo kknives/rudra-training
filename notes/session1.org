@@ -1,0 +1,17 @@
+#+TITLE: Session#1
+
+* OS
++ Hypervisor
+  The translation layer/emulator for VMs.
++ Linux distros: Ubuntu, Debian
++ Main board runs Ubuntu Mate
++ Why 512?
++ Subdirs in Linux
+  /boot /home
++ Directories are just files with their names in it
++ PEP: Python Enhancement Proposal
+  PEP8 is the code quality guidelines
++ Python uses indentation as a part of it's language grammar
++ Interpreter vs Compiler
++ Overriding an already defined function in user defined code
++ Python multiple arguments ~*args~
