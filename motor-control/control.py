@@ -10,10 +10,15 @@ def main(stdscr):
     stdscr.keypad(True)
     stdscr.clear()
 
-    stdscr.addstr(0, 0, "Motor Control", curses.A_REVERSE)
+    stdscr.addstr(0, curses.COLS // 2, "Motor Control", curses.A_REVERSE)
+    while True:
+        keystroke = stdscr.getch()
+        if keystroke == ord("q"):
+            break
+
+        stdscr.refresh()
 
     stdscr.refresh()
-    stdscr.getkey()
 
 
 wrapper(main)
