@@ -28,9 +28,9 @@ def main(stdscr):
         if keystroke == ord("q"):
             break
         elif keystroke == ord("w"):
-            w_down_counter += 1
+            w_down_counter = min(w_down_counter + 1, 100)
         else:
-            w_down_counter -= 1
+            w_down_counter = max(w_down_counter - 1, 0)
         speed = spd_scale_c(w_down_counter)
         stdscr.addstr(
             4, curses.COLS // 2, f"Current speed is {speed}", curses.A_REVERSE
