@@ -3,6 +3,7 @@
 from curses import wrapper
 from functools import partial
 import curses
+import time
 
 
 def spd_scale(y0, x0, y1, x1, x):
@@ -29,8 +30,10 @@ def main(stdscr):
             break
         elif keystroke == ord("w"):
             w_down_counter = min(w_down_counter + 1, 100)
+            time.sleep(0.2)
         else:
             w_down_counter = max(w_down_counter - 1, 0)
+            time.sleep(0.2)
         speed = spd_scale_c(w_down_counter)
         stdscr.addstr(
             4, curses.COLS // 2, f"Current speed is {speed}", curses.A_REVERSE
