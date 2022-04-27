@@ -8,7 +8,9 @@ import time
 
 def spd_scale(y0, x0, y1, x1, x):
     # y-y0 = y2-y1/x2-x1 (x-x0)
-    return y0 + ((y1 - y0) * x / (x1 - x0))
+    m = (y1 - y0) / (x1 - x0)
+    c = y0
+    return c + m * (x - x0)
 
 
 def main(stdscr):
@@ -29,7 +31,7 @@ def main(stdscr):
         if keystroke == ord("q"):
             break
         elif keystroke == ord("w"):
-            w_down_counter = min(w_down_counter + 1, 100)
+            w_down_counter = min(w_down_counter + 1, 10)
             time.sleep(0.2)
         else:
             w_down_counter = max(w_down_counter - 1, 0)
