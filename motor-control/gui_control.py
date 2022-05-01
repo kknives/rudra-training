@@ -4,7 +4,12 @@ import serial
 import argparse
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
+
+
+class MotorCommand:
+    def __init__(self, board):
+        self.board = board
 
 
 class ControlWindow(Gtk.Window):
@@ -28,54 +33,65 @@ class ControlWindow(Gtk.Window):
 
         hbox = Gtk.Box(spacing=5)
 
-        b_button = Gtk.Button.new_with_label("Stop")
-        b_button.connect("clicked", self.b_clicked)
-        hb.pack_end(b_button)
+        self.b_button = Gtk.Button.new_with_mnemonic("Sto_p")
+        self.b_button.connect("clicked", self.motor_command_btn)
+        hb.pack_end(self.b_button)
         hb.show_all()
 
         dir_label = Gtk.Label()
         dir_label.set_markup("<span weight='ultrabold' font='20'>Directions</span>")
         dir_label.set_justify(Gtk.Justification.CENTER)
         vbox.pack_start(dir_label, True, True, 0)
-        w_button = Gtk.Button.new_from_icon_name("go-up", Gtk.IconSize.BUTTON)
-        w_button.connect("clicked", self.w_clicked)
+        self.w_button = Gtk.Button.new_from_icon_name("go-up", Gtk.IconSize.BUTTON)
+        self.w_button.connect("clicked", self.motor_command_btn)
 
-        a_button = Gtk.Button.new_from_icon_name("go-previous", Gtk.IconSize.BUTTON)
-        a_button.connect("clicked", self.a_clicked)
+        self.a_button = Gtk.Button.new_from_icon_name(
+            "go-previous", Gtk.IconSize.BUTTON
+        )
+        self.a_button.connect("clicked", self.motor_command_btn)
 
-        s_button = Gtk.Button.new_from_icon_name("go-next", Gtk.IconSize.BUTTON)
-        s_button.connect("clicked", self.s_clicked)
+        self.s_button = Gtk.Button.new_from_icon_name("go-next", Gtk.IconSize.BUTTON)
+        self.s_button.connect("clicked", self.motor_command_btn)
 
-        d_button = Gtk.Button.new_from_icon_name("go-down", Gtk.IconSize.BUTTON)
-        d_button.connect("clicked", self.d_clicked)
+        self.d_button = Gtk.Button.new_from_icon_name("go-down", Gtk.IconSize.BUTTON)
+        self.d_button.connect("clicked", self.motor_command_btn)
 
-        hbox.pack_start(w_button, True, True, 0)
-        hbox.pack_start(a_button, True, True, 0)
-        hbox.pack_start(s_button, True, True, 0)
-        hbox.pack_start(d_button, True, True, 0)
+        hbox.pack_start(self.w_button, True, True, 0)
+        hbox.pack_start(self.a_button, True, True, 0)
+        hbox.pack_start(self.s_button, True, True, 0)
+        hbox.pack_start(self.d_button, True, True, 0)
 
         vbox.pack_start(hbox, True, True, 0)
         vbox.show_all()
 
         self.connect("destroy", self.release_serial)
+        self.connect("key-press-event", self.motor_command)
+
+    def motor_command_btn(self, btn):
+        if btn is self.w_button:
+            self.arduino.write(b"w")
+        elif btn is self.a_button:
+            self.arduino.write(b"a")
+        elif btn is self.s_button:
+            self.arduino.write(b"s")
+        elif btn is self.d_button:
+            self.arduino.write(b"d")
+        elif btn is self.b_button:
+            self.arduino.write(b"b")
+
+    def motor_command(self, *args):
+        match args:
+            case (_, event) if Gdk.keyval_name(event.keyval) == "w":
+                self.arduino.write(b"w")
+            case (_, event) if Gdk.keyval_name(event.keyval) == "a":
+                self.arduino.write(b"a")
+            case (_, event) if Gdk.keyval_name(event.keyval) == "s":
+                self.arduino.write(b"s")
+            case (_, event) if Gdk.keyval_name(event.keyval) == "d":
+                self.arduino.write(b"d")
 
     def release_serial(self, _this_window):
         self.arduino.close()
-
-    def b_clicked(self, button):
-        self.arduino.write(b"b")
-
-    def w_clicked(self, button):
-        self.arduino.write(b"w")
-
-    def a_clicked(self, button):
-        self.arduino.write(b"a")
-
-    def s_clicked(self, button):
-        self.arduino.write(b"s")
-
-    def d_clicked(self, button):
-        self.arduino.write(b"d")
 
 
 aparser = argparse.ArgumentParser(
