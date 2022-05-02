@@ -66,11 +66,11 @@ class ControlWindow(Gtk.Window):
         )
         self.a_button.connect("clicked", self.motor_command_btn)
 
-        self.s_button = Gtk.Button.new_from_icon_name("go-next", Gtk.IconSize.BUTTON)
-        self.s_button.connect("clicked", self.motor_command_btn)
-
-        self.d_button = Gtk.Button.new_from_icon_name("go-down", Gtk.IconSize.BUTTON)
+        self.d_button = Gtk.Button.new_from_icon_name("go-next", Gtk.IconSize.BUTTON)
         self.d_button.connect("clicked", self.motor_command_btn)
+
+        self.s_button = Gtk.Button.new_from_icon_name("go-down", Gtk.IconSize.BUTTON)
+        self.s_button.connect("clicked", self.motor_command_btn)
 
         hbox.pack_start(self.w_button, True, True, 0)
         hbox.pack_start(self.a_button, True, True, 0)
@@ -113,14 +113,14 @@ class ControlWindow(Gtk.Window):
             self.motor_r2.set_state("UP")
         elif btn is self.s_button:
             self.arduino.write(b"s")
-            self.motor_l1.set_state("UP")
-            self.motor_l2.set_state("UP")
+            self.motor_l1.set_state("DOWN")
+            self.motor_l2.set_state("DOWN")
             self.motor_r1.set_state("DOWN")
             self.motor_r2.set_state("DOWN")
         elif btn is self.d_button:
             self.arduino.write(b"d")
-            self.motor_l1.set_state("DOWN")
-            self.motor_l2.set_state("DOWN")
+            self.motor_l1.set_state("UP")
+            self.motor_l2.set_state("UP")
             self.motor_r1.set_state("DOWN")
             self.motor_r2.set_state("DOWN")
         elif btn is self.b_button:
