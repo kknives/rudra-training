@@ -4,12 +4,26 @@ import serial
 import argparse
 
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gdk
+from gi.repository import Gtk, Gdk, GdkPixbuf
 
 
-class MotorCommand:
-    def __init__(self, board):
-        self.board = board
+class MotorDiag(Gtk.Box):
+    def __init__(self, name):
+        super().__init__(orientation=Gtk.Orientation.VERTICAL)
+        self.dir_arrow = Gtk.Label()
+        self.dir_arrow.set_markup("<span font='40'>" "?" "</span>")
+        self.motor_name = Gtk.Label(label=name)
+        self.pack_start(self.dir_arrow, True, True, 0)
+        self.pack_start(self.motor_name, True, True, 0)
+
+    def set_state(self, state):
+        match state:
+            case "UP":
+                self.dir_arrow.set_markup("<span font='40'>" "🠑" "</span>")
+            case "DOWN":
+                self.dir_arrow.set_markup("<span font='40'>" "🠓" "</span>")
+            case "STOP":
+                self.dir_arrow.set_markup("<span font='40'>" "⃠" "</span>")
 
 
 class ControlWindow(Gtk.Window):
@@ -38,10 +52,12 @@ class ControlWindow(Gtk.Window):
         hb.pack_end(self.b_button)
         hb.show_all()
 
-        dir_label = Gtk.Label()
-        dir_label.set_markup("<span weight='ultrabold' font='20'>Directions</span>")
-        dir_label.set_justify(Gtk.Justification.CENTER)
-        vbox.pack_start(dir_label, True, True, 0)
+        self.dir_label = Gtk.Label()
+        self.dir_label.set_markup(
+            "<span weight='ultrabold' font='20'>Directions</span>"
+        )
+        self.dir_label.set_justify(Gtk.Justification.CENTER)
+        vbox.pack_start(self.dir_label, True, True, 0)
         self.w_button = Gtk.Button.new_from_icon_name("go-up", Gtk.IconSize.BUTTON)
         self.w_button.connect("clicked", self.motor_command_btn)
 
@@ -62,6 +78,21 @@ class ControlWindow(Gtk.Window):
         hbox.pack_start(self.d_button, True, True, 0)
 
         vbox.pack_start(hbox, True, True, 0)
+        self.motor_l1 = MotorDiag("Left1")
+        self.motor_l2 = MotorDiag("Left2")
+        self.motor_r1 = MotorDiag("Right1")
+        self.motor_r2 = MotorDiag("Right2")
+
+        motor_grid = Gtk.FlowBox()
+        motor_grid.set_valign(Gtk.Align.START)
+        motor_grid.set_max_children_per_line(2)
+        motor_grid.set_selection_mode(Gtk.SelectionMode.NONE)
+
+        motor_grid.add(self.motor_l1)
+        motor_grid.add(self.motor_r1)
+        motor_grid.add(self.motor_l2)
+        motor_grid.add(self.motor_r2)
+        vbox.pack_start(motor_grid, True, True, 0)
         vbox.show_all()
 
         self.connect("destroy", self.release_serial)
@@ -70,12 +101,28 @@ class ControlWindow(Gtk.Window):
     def motor_command_btn(self, btn):
         if btn is self.w_button:
             self.arduino.write(b"w")
+            self.motor_l1.set_state("UP")
+            self.motor_l2.set_state("UP")
+            self.motor_r1.set_state("UP")
+            self.motor_r2.set_state("UP")
         elif btn is self.a_button:
             self.arduino.write(b"a")
+            self.motor_l1.set_state("DOWN")
+            self.motor_l2.set_state("DOWN")
+            self.motor_r1.set_state("UP")
+            self.motor_r2.set_state("UP")
         elif btn is self.s_button:
             self.arduino.write(b"s")
+            self.motor_l1.set_state("UP")
+            self.motor_l2.set_state("UP")
+            self.motor_r1.set_state("DOWN")
+            self.motor_r2.set_state("DOWN")
         elif btn is self.d_button:
             self.arduino.write(b"d")
+            self.motor_l1.set_state("DOWN")
+            self.motor_l2.set_state("DOWN")
+            self.motor_r1.set_state("DOWN")
+            self.motor_r2.set_state("DOWN")
         elif btn is self.b_button:
             self.arduino.write(b"b")
             self.motor1.set_state("STOP")
