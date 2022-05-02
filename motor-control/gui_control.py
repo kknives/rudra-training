@@ -8,6 +8,8 @@ from gi.repository import Gtk, Gdk, GdkPixbuf
 
 
 class MotorDiag(Gtk.Box):
+    """A vertical Gtk.Box with 2 labels showing the direction and motor name"""
+
     def __init__(self, name):
         super().__init__(orientation=Gtk.Orientation.VERTICAL)
         self.dir_arrow = Gtk.Label()
@@ -17,6 +19,9 @@ class MotorDiag(Gtk.Box):
         self.pack_start(self.motor_name, True, True, 0)
 
     def set_state(self, state):
+        """Change the direction of the motor by passing "UP" or "DOWN" or "STOP"
+        as state.
+        """
         match state:
             case "UP":
                 self.dir_arrow.set_markup("<span font='40'>" "🠑" "</span>")
@@ -28,6 +33,7 @@ class MotorDiag(Gtk.Box):
 
 class ControlWindow(Gtk.Window):
     def __init__(self, sp):
+        """Construct the main window and all of its components"""
         super().__init__(title="Motor Control")
         self.set_border_width(5)
         self.set_default_size(400, 200)
@@ -88,6 +94,7 @@ class ControlWindow(Gtk.Window):
         motor_grid.set_max_children_per_line(2)
         motor_grid.set_selection_mode(Gtk.SelectionMode.NONE)
 
+        # Row major insertion
         motor_grid.add(self.motor_l1)
         motor_grid.add(self.motor_r1)
         motor_grid.add(self.motor_l2)
@@ -95,10 +102,12 @@ class ControlWindow(Gtk.Window):
         vbox.pack_start(motor_grid, True, True, 0)
         vbox.show_all()
 
+        # Always free the serial port on destroy
         self.connect("destroy", self.release_serial)
         self.connect("key-press-event", self.motor_command)
 
     def motor_command_btn(self, btn):
+        """Command switch for updating state and communicating with the board"""
         if btn is self.w_button:
             self.arduino.write(b"w")
             self.motor_l1.set_state("UP")
@@ -131,6 +140,7 @@ class ControlWindow(Gtk.Window):
             self.motor4.set_state("STOP")
 
     def motor_command(self, _, event):
+        """Map the keybinds to the button for visual feedback"""
         if Gdk.keyval_name(event.keyval) == "w":
             self.w_button.activate()
         elif Gdk.keyval_name(event.keyval) == "a":
@@ -143,6 +153,7 @@ class ControlWindow(Gtk.Window):
             self.b_button.activate()
 
     def release_serial(self, _this_window):
+        """Release the serial port"""
         self.arduino.close()
 
 
