@@ -32,6 +32,8 @@ class MotorDiag(Gtk.Box):
 
 
 class ControlWindow(Gtk.Window):
+    """The main window with the direction buttons and state display"""
+
     def __init__(self, sp):
         """Construct the main window and all of its components"""
         super().__init__(title="Motor Control")
