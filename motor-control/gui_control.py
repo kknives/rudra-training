@@ -78,17 +78,22 @@ class ControlWindow(Gtk.Window):
             self.arduino.write(b"d")
         elif btn is self.b_button:
             self.arduino.write(b"b")
+            self.motor1.set_state("STOP")
+            self.motor2.set_state("STOP")
+            self.motor3.set_state("STOP")
+            self.motor4.set_state("STOP")
 
-    def motor_command(self, *args):
-        match args:
-            case (_, event) if Gdk.keyval_name(event.keyval) == "w":
-                self.arduino.write(b"w")
-            case (_, event) if Gdk.keyval_name(event.keyval) == "a":
-                self.arduino.write(b"a")
-            case (_, event) if Gdk.keyval_name(event.keyval) == "s":
-                self.arduino.write(b"s")
-            case (_, event) if Gdk.keyval_name(event.keyval) == "d":
-                self.arduino.write(b"d")
+    def motor_command(self, _, event):
+        if Gdk.keyval_name(event.keyval) == "w":
+            self.w_button.activate()
+        elif Gdk.keyval_name(event.keyval) == "a":
+            self.a_button.activate()
+        elif Gdk.keyval_name(event.keyval) == "s":
+            self.s_button.activate()
+        elif Gdk.keyval_name(event.keyval) == "d":
+            self.d_button.activate()
+        elif Gdk.keyval_name(event.keyval) == "b":
+            self.b_button.activate()
 
     def release_serial(self, _this_window):
         self.arduino.close()
