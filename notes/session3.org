@@ -1,0 +1,11 @@
+#+TITLE: Session3
++ ~more~ vs ~less~
++ Every program must pass ~flake8~
++ ~su~ switch user
++ /dunder/ variables
++ /private/ variables in Python
++ Identifying malicious packages
++ Functional programming
++ /BDFL/ Benovelent Dictator for Life
++ Packages vs Modules and Methods
+* A module to print a message on import
