@@ -11,7 +11,7 @@ class MotorDiag(Gtk.Box):
     def __init__(self, name):
         super().__init__(orientation=Gtk.Orientation.VERTICAL)
         self.dir_arrow = Gtk.Label()
-        self.dir_arrow.set_markup("<span font='40'>" "?" "</span>")
+        self.dir_arrow.set_markup("<span font='40'>" "🠑🠓" "</span>")
         self.motor_name = Gtk.Label(label=name)
         self.pack_start(self.dir_arrow, True, True, 0)
         self.pack_start(self.motor_name, True, True, 0)
