@@ -114,25 +114,29 @@ class ControlWindow(Gtk.Window):
     def motor_command_btn(self, btn):
         """Command switch for updating state and communicating with the board"""
         if btn is self.w_button:
-            print(self.arduino.write(bytes(chr(127), encoding="utf8")))
+            self.arduino.write(bytes(chr(127), encoding="utf8"))
+            self.arduino.write(bytes(chr(255), encoding="utf8"))
             self.motor_l1.set_state("UP")
             self.motor_l2.set_state("UP")
             self.motor_r1.set_state("UP")
             self.motor_r2.set_state("UP")
         elif btn is self.a_button:
-            self.arduino.write(b"")
+            self.arduino.write(bytes(chr(1), encoding="utf8"))
+            self.arduino.write(bytes(chr(255), encoding="utf8"))
             self.motor_l1.set_state("DOWN")
             self.motor_l2.set_state("DOWN")
             self.motor_r1.set_state("UP")
             self.motor_r2.set_state("UP")
         elif btn is self.s_button:
             self.arduino.write(bytes(chr(1), encoding="utf8"))
+            self.arduino.write(bytes(chr(128), encoding="utf8"))
             self.motor_l1.set_state("DOWN")
             self.motor_l2.set_state("DOWN")
             self.motor_r1.set_state("DOWN")
             self.motor_r2.set_state("DOWN")
         elif btn is self.d_button:
-            self.arduino.write(b"d")
+            self.arduino.write(bytes(chr(127), encoding="utf8"))
+            self.arduino.write(bytes(chr(128), encoding="utf8"))
             self.motor_l1.set_state("UP")
             self.motor_l2.set_state("UP")
             self.motor_r1.set_state("DOWN")
