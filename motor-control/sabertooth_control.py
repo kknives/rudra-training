@@ -113,36 +113,53 @@ class ControlWindow(Gtk.Window):
 
     def motor_command_btn(self, btn):
         """Command switch for updating state and communicating with the board"""
+
+        # The first motor command range is between 0x01 to 0x7F
+        # The second motor's command range is between 0x80 to 0xFF
+        # Cannot use chr(255) as ascii range is between 0-127, any higher and
+        # it becomes Unicdoe multubyte encoding. So, better use bytestringd
         if btn is self.w_button:
-            self.arduino.write(bytes(chr(127), encoding="utf8"))
-            self.arduino.write(bytes(chr(255), encoding="utf8"))
+            # First Motor
+            self.arduino.write(b"\x7F")
+            # Second Motor
+            self.arduino.write(b"\xFF")
+
             self.motor_l1.set_state("UP")
             self.motor_l2.set_state("UP")
             self.motor_r1.set_state("UP")
             self.motor_r2.set_state("UP")
         elif btn is self.a_button:
-            self.arduino.write(bytes(chr(1), encoding="utf8"))
-            self.arduino.write(bytes(chr(255), encoding="utf8"))
+            # First Motor
+            self.arduino.write(b"\x7F")
+            # Second Motor
+            self.arduino.write(b"\x80")
+
             self.motor_l1.set_state("DOWN")
             self.motor_l2.set_state("DOWN")
             self.motor_r1.set_state("UP")
             self.motor_r2.set_state("UP")
         elif btn is self.s_button:
-            self.arduino.write(bytes(chr(1), encoding="utf8"))
-            self.arduino.write(bytes(chr(128), encoding="utf8"))
+            # First Motor
+            self.arduino.write(b"\x01")
+            # Second Motor
+            self.arduino.write(b"\x80")
+
             self.motor_l1.set_state("DOWN")
             self.motor_l2.set_state("DOWN")
             self.motor_r1.set_state("DOWN")
             self.motor_r2.set_state("DOWN")
         elif btn is self.d_button:
-            self.arduino.write(bytes(chr(127), encoding="utf8"))
-            self.arduino.write(bytes(chr(128), encoding="utf8"))
+            # First Motor
+            self.arduino.write(b"\x01")
+            # Second Motor
+            self.arduino.write(b"\xFF")
             self.motor_l1.set_state("UP")
             self.motor_l2.set_state("UP")
             self.motor_r1.set_state("DOWN")
             self.motor_r2.set_state("DOWN")
         elif btn is self.b_button:
-            self.arduino.write(bytes(chr(0), encoding="utf8"))
+            # Both stop
+            self.arduino.write(b"\x00")
             self.motor_l1.set_state("STOP")
             self.motor_l2.set_state("STOP")
             self.motor_r1.set_state("STOP")
