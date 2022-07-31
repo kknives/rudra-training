@@ -1,0 +1,3 @@
+id = { (ASCII_ALPHANUMERIC | ".")+ }
+
+message = { (^"@") ~ id ~ ANY*}
