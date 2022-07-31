@@ -13,6 +13,7 @@ use tokio::sync::mpsc;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    color_eyre::install()?;
     let mut prompt = Input::new();
     let (sender, receiver) = mpsc::channel(32);
     let handle = Handle::current();
@@ -21,7 +22,7 @@ async fn main() -> Result<()> {
     });
 
     loop {
-        let input: String = prompt.with_prompt("You").interact_text()?;
+        let input: String = prompt.with_prompt("You").report(false).interact_text()?;
         if input == "quit" {
             sender.send(Command::Terminate).await?;
             break;
