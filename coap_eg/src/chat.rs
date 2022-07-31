@@ -57,11 +57,18 @@ async fn listen_reply(mut user: mpsc::Receiver<Command>) -> Result<()> {
                 let command = producer.ok_or_else(|| eyre!("Could not process input thread message"))?;
                 match command {
                     Command::UserInput(content) => {
-                        let recepient = Recepient::parse(Rule::id, &content)?.next()
-                                            .ok_or_else(|| eyre!("Could not parse user input"))?
-                        .as_str();
-                        println!("Tell {} to {}", recepient, content);
-                        // handle_send(&socket, content.into_vec(), recepient).await?;
+                        let mut recepient: Result<String, eyre::Error> = Err(eyre!("Could not parse message body"));
+                        let mut body: Result<String, eyre::Error> = Err(eyre!("Could not parse message body"));
+
+                        for token in Recepient::parse(Rule::message, &content)?.next()
+                                            .ok_or_else(|| eyre!("Could not parse user input"))?.into_inner() {
+                            match token.as_rule() {
+                                Rule::id => {recepient = Ok(token.as_str().to_owned());},
+                                Rule::body => {body = Ok(token.as_str().to_owned());},
+                                _ => {},
+                            };
+                        }
+                        handle_send(&socket, body?.into_bytes(), recepient?).await?;
                     },
                     Command::Terminate => { break; },
                 };
@@ -82,7 +89,7 @@ async fn handle_recv(socket: &UdpSocket) -> Result<CoapRequest<SocketAddr>> {
     Ok(CoapRequest::from_packet(packet, src))
 }
 
-async fn handle_send(socket: &UdpSocket, content: Vec<u8>, recepient: &str) -> Result<()> {
+async fn handle_send(socket: &UdpSocket, content: Vec<u8>, recepient: String) -> Result<()> {
     let mut request: CoapRequest<SocketAddr> = CoapRequest::new();
     request.set_method(Method::Post);
     request.set_path("/chat");
