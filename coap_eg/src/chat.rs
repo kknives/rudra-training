@@ -6,20 +6,26 @@ use eyre::eyre;
 use pest::Parser;
 use pest_derive::Parser;
 use std::net::SocketAddr;
-use std::thread;
 use tokio::net::UdpSocket;
-use tokio::runtime::Handle;
+use tokio::runtime::Builder;
 use tokio::sync::mpsc;
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<(), Report> {
     color_eyre::install()?;
+    let port = env::args()
+        .nth(1)
+        .ok_or_else(|| eyre!("No port argument supplied"))?;
+    let runtime = Builder::new_multi_thread()
+        .worker_threads(1)
+        .enable_all()
+        .build()?;
+
+    let term = Term::stdout();
     let mut prompt = Input::new();
+    term.write_line("Welcome to CoAP Chat Server!")?;
+
     let (sender, receiver) = mpsc::channel(32);
-    let handle = Handle::current();
-    let net_thread = thread::spawn(move || {
-        handle.spawn(listen_reply(receiver));
-    });
+    let net_thread = runtime.spawn(listen_reply(receiver, term, port));
 
     loop {
         let input: String = prompt.with_prompt("You").report(false).interact_text()?;
