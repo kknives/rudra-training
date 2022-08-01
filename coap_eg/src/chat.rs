@@ -29,17 +29,17 @@ fn main() -> Result<(), Report> {
 
     loop {
         let input: String = prompt.with_prompt("You").report(false).interact_text()?;
-        if input == "quit" {
-            sender.send(Command::Terminate).await?;
+        if net_thread.is_finished() {
+            break;
+        } else if input == "quit" {
+            runtime.block_on(sender.send(Command::Terminate))?;
             break;
         } else {
-            sender.send(Command::UserInput(input)).await?;
+            runtime.block_on(sender.send(Command::UserInput(input)))?;
         }
     }
 
-    net_thread
-        .join()
-        .map_err(|_| eyre!("Could not join network thread"))?;
+    runtime.block_on(net_thread)??;
     Ok(())
 }
 
