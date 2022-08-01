@@ -50,10 +50,9 @@ enum Command {
     Terminate,
 }
 
-async fn listen_reply(mut user: mpsc::Receiver<Command>) -> Result<()> {
-    let socket = UdpSocket::bind("127.0.0.1:0").await?;
-    let term = Term::stdout();
-    term.write_line("Welcome to CoAP Chat Server!")?;
+async fn listen_reply(mut user: mpsc::Receiver<Command>, term: Term, port: String) -> Result<()> {
+    let socket = UdpSocket::bind(format!("127.0.0.1:{}", port)).await?;
+    println!("Connected on port {}", port);
     loop {
         tokio::select! {
             request = handle_recv(&socket) => {
@@ -103,6 +102,16 @@ async fn handle_send(socket: &UdpSocket, content: Vec<u8>, recepient: String) ->
     request.set_path("/chat");
     request.message.payload = content;
     let raw_packet = request.message.to_bytes()?;
-    socket.send_to(&raw_packet[..], recepient).await?;
+    socket
+        .send_to(&raw_packet[..], resolve_name(&recepient))
+        .await?;
     Ok(())
+}
+
+fn resolve_name(name: &str) -> String {
+    match name {
+        "hyena" => String::from("127.0.0.1:5555"),
+        "fox" => String::from("127.0.0.1:5454"),
+        _ => String::from(""),
+    }
 }
