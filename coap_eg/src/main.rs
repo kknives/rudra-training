@@ -5,6 +5,7 @@ use std::net::UdpSocket;
 
 fn main() -> Result<()> {
     let socket = UdpSocket::bind("127.0.0.1:1331")?;
+    color_eyre::install()?;
     let mut buf = [0; 100];
     let (size, src) = socket.recv_from(&mut buf)?;
     println!("Payload {:x?}", &buf[..size]);

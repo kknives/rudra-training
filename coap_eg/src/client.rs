@@ -3,6 +3,7 @@ use color_eyre::eyre::Result;
 use std::net::{SocketAddr, UdpSocket};
 
 fn main() -> Result<()> {
+    color_eyre::install()?;
     let mut request: CoapRequest<SocketAddr> = CoapRequest::new();
     request.set_method(Method::Post);
     request.set_path("/test");
