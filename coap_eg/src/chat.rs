@@ -1,10 +1,11 @@
 use coap_lite::{CoapRequest, Packet, RequestType as Method};
-use color_eyre::eyre::Result;
+use color_eyre::{eyre::Report, eyre::Result};
 use console::Term;
 use dialoguer::Input;
 use eyre::eyre;
 use pest::Parser;
 use pest_derive::Parser;
+use std::env;
 use std::net::SocketAddr;
 use tokio::net::UdpSocket;
 use tokio::runtime::Builder;
